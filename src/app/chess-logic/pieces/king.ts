@@ -19,9 +19,9 @@ export class King extends Piece{
         this._FENChar = pieceColor === Color.White? FENChar.WhiteKing : FENChar.BlackKing;
     }
     public get hasMoved():boolean{
-        return this.hasMoved;
+        return this._hasMoved;
     }
     public set hasMoved(_){
-        this.hasMoved=true;
+        this._hasMoved=true;
     }
 }

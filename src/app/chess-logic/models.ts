@@ -47,3 +47,15 @@ export type LastMove = {
     currX : number,
     currY : number
 }
+
+type KingChecked = {
+    isInCheck : true;
+    x:number;
+    y:number
+}
+
+type KingNotChecked ={
+    isInCheck : false
+}
+
+export type CheckSate = KingChecked|KingNotChecked
