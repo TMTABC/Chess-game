@@ -19,6 +19,8 @@ export class ChessBoard{
     private _isGameOver:boolean=false;
     private _gameOverMessage:string|undefined;
     private fullNumberOfMoves:number=1;
+    private threeFoldRepetitionDictionary=new Map<string,number>();
+    private threeFoldRepetitionFlag:boolean=false;
 
     constructor(){
         this.chessBoard = [
@@ -403,5 +405,8 @@ export class ChessBoard{
             return true;
 
         return false;
+    }
+    private updateThreeFoldRepetitionDictionary(FEN:string):void{
+        const threeFoldRepetitionFENKey:string=FEN.split(" ").slice(0,4).join("");
     }
 }
