@@ -1,4 +1,4 @@
-<div class="chess-board">
+<div class="chess-board"[ngClass]="{'rotated':flipMode}">
   <div *ngFor="let row of chessBoardView; let x = index" class="row">
     <div
       *ngFor="let piece of row; let y = index"
@@ -21,12 +21,15 @@
         [src]="pieceImagePaths[piece]"
         [alt]="piece"
         class="piece"
+        [ngClass]="{'rotated':flipMode}"
       />
     </div>
   </div>
-  <h2 *ngIf="gameOverMessage" class="game-over-message">{{gameOverMessage}}</h2>
-  <div *ngIf="isPromotionActive" class="promotion-dialog">
-    <img *ngFor="let piece of promotionPiece()" [src]="pieceImagePaths[piece]" (click)="promotePiece(piece)">
-    <span class="close-promotion-dialog" (click)="closePawnPromotionDialog()">&times;</span>
-  </div>
+</div>
+<button (click)="flipBoard()">Flip</button>
+
+<h2 *ngIf="gameOverMessage" class="game-over-message">{{gameOverMessage}}</h2>
+<div *ngIf="isPromotionActive" class="promotion-dialog">
+  <img *ngFor="let piece of promotionPiece()" [src]="pieceImagePaths[piece]" (click)="promotePiece(piece)">
+  <span class="close-promotion-dialog" (click)="closePawnPromotionDialog()">&times;</span>
 </div>

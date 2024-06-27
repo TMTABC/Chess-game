@@ -1,3 +1,4 @@
+import { FENConverter } from "./FENConverter";
 import { CheckSate, Color, Coodrs, FENChar, LastMove, SafeSqures } from "./models";
 import { Bishop } from "./pieces/bishop";
 import { King } from "./pieces/king";
@@ -21,6 +22,8 @@ export class ChessBoard{
     private fullNumberOfMoves:number=1;
     private threeFoldRepetitionDictionary=new Map<string,number>();
     private threeFoldRepetitionFlag:boolean=false;
+    private _boardAsFEN:string="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private FENConverter = new FENConverter();
 
     constructor(){
         this.chessBoard = [
@@ -93,6 +96,10 @@ export class ChessBoard{
 
     public get gameOverMessage():string|undefined{
         return this._gameOverMessage;
+    }
+
+    public get boardAsFEN():string{
+        return this._boardAsFEN;
     }
 
     public static isSquareDark(x:number,y:number):boolean{
@@ -298,6 +305,8 @@ export class ChessBoard{
         this._safeSquare = this.findSafeSqures();
         this._isGameOver=this.isGameFinshed();
         if(this._playerColor === Color.White) this.fullNumberOfMoves++;
+        this._boardAsFEN=this.FENConverter.converterBoardToFEN(this.chessBoard,this._playerColor,this._lastMove,this.fiftyMoveRuleCounter,this.fullNumberOfMoves);
+        this.updateThreeFoldRepetitionDictionary(this._boardAsFEN)
     }
 
     private handlingSpecialMoves(piece:Piece,prevX:number,prevY:number,newX:number,newY:number):void{
@@ -346,6 +355,10 @@ export class ChessBoard{
                 this._gameOverMessage=prevPlayer+" won by checkmate";
             }
             else this._gameOverMessage = "Stalemate"
+            return true;
+        }
+        if(this.threeFoldRepetitionFlag){
+            this._gameOverMessage="Draw due three fold repetition rule";
             return true;
         }
         if(this.fiftyMoveRuleCounter===50){
@@ -408,5 +421,16 @@ export class ChessBoard{
     }
     private updateThreeFoldRepetitionDictionary(FEN:string):void{
         const threeFoldRepetitionFENKey:string=FEN.split(" ").slice(0,4).join("");
+        const threeFoldRepetitionValue:number|undefined=this.threeFoldRepetitionDictionary.get(threeFoldRepetitionFENKey);
+
+        if(threeFoldRepetitionValue===undefined){
+            this.threeFoldRepetitionDictionary.set(threeFoldRepetitionFENKey,1);
+        }else{
+            if(threeFoldRepetitionValue===2){
+                this.threeFoldRepetitionFlag=true;
+                return;
+            }
+            this.threeFoldRepetitionDictionary.set(threeFoldRepetitionFENKey,2);
+        } 
     }
 }

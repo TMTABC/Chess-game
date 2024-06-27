@@ -1,3 +1,4 @@
+import { ChessBoardService } from './chess-board.service';
 import {
   CheckSate,
   Coodrs,
@@ -44,6 +45,16 @@ export class ChessBoardComponent {
     return this.playerColor === Color.Black ?
     [FENChar.BlackBishop,FENChar.BlackKnight,FENChar.BlackQueen,FENChar.BlackRook]:
     [FENChar.WhiteBishop,FENChar.WhiteKnight,FENChar.WhiteQueen,FENChar.WhiteRook];
+  }
+
+  public flipMode:boolean=false;
+
+  constructor(protected chessBoardService:ChessBoardService){
+
+  }
+
+  public flipBoard():void{
+    this.flipMode=!this.flipMode;
   }
 
   public isSquareDark(x: number, y: number): boolean {
@@ -120,15 +131,16 @@ export class ChessBoardComponent {
       //wait player to choose promoted piece
       return;
     }
-    this.updateBoard(prevX,prevY,newX,newY);
+    this.updateBoard(prevX,prevY,newX,newY,this.promotedPiece);
   }
   
-  private updateBoard(prevX:number,prevY:number,newX:number,newY:number):void{
+  protected updateBoard(prevX:number,prevY:number,newX:number,newY:number,promotedPiece:FENChar|null):void{
     this.chessBoard.move(prevX,prevY,newX,newY,this.promotedPiece);
     this.chessBoardView= this.chessBoard.chessBoardView;
     this.checkSate=this.chessBoard.checkSate;
     this.lastMove=this.chessBoard.lastMove;
     this.unmakingPrevouslySelectedAndSafeSquares();
+    this.chessBoardService.chessBoardState$.next(this.chessBoard.boardAsFEN)
   }
 
   public promotePiece(piece:FENChar):void{
@@ -136,7 +148,7 @@ export class ChessBoardComponent {
     this.promotedPiece = piece;
     const {x:newX , y:newY} = this.promotionCoords;
     const {x:prevX,y:prevY} = this.selectedSquare;
-    this.updateBoard(prevX,prevY,newX,newY);
+    this.updateBoard(prevX,prevY,newX,newY,this.promotedPiece);
     
   }
 
