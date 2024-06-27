@@ -12,17 +12,21 @@ import { Subscription, firstValueFrom } from 'rxjs';
   styleUrl: '../chess-board/chess-board.component.css'
 })
 export class ComputerModeComponent extends ChessBoardComponent implements OnInit{
+  private subsrciptions$=new Subscription();
+
   constructor(private stockfishService:StockfishService){
     super(inject(ChessBoardService));
   }
   public ngOnInit(): void {
-      const chessBoardStateSubscription:Subscription=this.chessBoardService.chessBoardState$.subscribe({
+      const chessBoardStateSubscription$:Subscription=this.chessBoardService.chessBoardState$.subscribe({
         next:async(FEN:string)=>{
           const player:string=FEN.split(" ")[1];
           if(player==="w") return;
           const {prevX,prevY,newX,newY,promotedPiece}= await firstValueFrom(this.stockfishService.getBestMove(FEN));
+          this.updateBoard(prevX,prevY,newX,newY,promotedPiece)
         }
       })
+      this.subsrciptions$.add(chessBoardStateSubscription)
   }
 
 }
